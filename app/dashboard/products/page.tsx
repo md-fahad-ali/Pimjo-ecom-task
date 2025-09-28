@@ -22,8 +22,6 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<"all" | Product["status"]>("all");
   const currentPage = 1;
   const totalPages = 10;
 
@@ -47,12 +45,6 @@ export default function ProductsPage() {
     };
   }, []);
   
-  const categories = useMemo(() => {
-    if (!products) return ["all"];
-    const set = new Set(products.map(p => p.category));
-    return ["all", ...Array.from(set).sort()];
-  }, [products]);
-
   const filteredProducts = useMemo(() => {
     if (!products) return [] as Product[];
     const q = search.trim().toLowerCase();
@@ -62,11 +54,9 @@ export default function ProductsPage() {
             .filter(Boolean)
             .some((v) => String(v).toLowerCase().includes(q))
         : true;
-      const matchesCategory = categoryFilter === "all" ? true : p.category === categoryFilter;
-      const matchesStatus = statusFilter === "all" ? true : p.status === statusFilter;
-      return matchesSearch && matchesCategory && matchesStatus;
+      return matchesSearch;
     });
-  }, [products, search, categoryFilter, statusFilter]);
+  }, [products, search]);
   return (
     <div className="dashboard-theme">
       {/* Toolbar card */}
@@ -103,38 +93,19 @@ export default function ProductsPage() {
               />
             </div>
 
-            {/* Category filter */}
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className={`rounded-lg border px-3 py-2 text-theme-sm shadow-theme-xs ${
+            {/* Date button */}
+            <button
+              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-theme-sm font-medium shadow-theme-xs whitespace-nowrap ${
                 theme === "dark"
-                  ? "border-gray-700 bg-gray-800 text-gray-300 hover:bg-white/[0.03]"
-                  : "border-[var(--border)] bg-[var(--panel)] text-[var(--foreground)] hover:bg-[var(--hover)]"
+                  ? "border-gray-700 bg-gray-800 text-gray-400 hover:bg-white/[0.03]"
+                  : "border-[var(--border)] bg-[var(--panel)] text-[var(--secondary)] hover:bg-[var(--hover)]"
               }`}
             >
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {c === "all" ? "All categories" : c}
-                </option>
-              ))}
-            </select>
-
-            {/* Status filter */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as 'all' | Product['status'])}
-              className={`rounded-lg border px-3 py-2 text-theme-sm shadow-theme-xs ${
-                theme === "dark"
-                  ? "border-gray-700 bg-gray-800 text-gray-300 hover:bg-white/[0.03]"
-                  : "border-[var(--border)] bg-[var(--panel)] text-[var(--foreground)] hover:bg-[var(--hover)]"
-              }`}
-            >
-              <option value="all">All status</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Pending">Pending</option>
-              <option value="Canceled">Canceled</option>
-            </select>
+              <svg className={`${theme === "dark" ? "stroke-gray-400" : "stroke-[var(--secondary)]"}`} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 2.5V5M15 2.5V5M3.333 8.333h13.334M4.167 4.167h11.666A1.667 1.667 0 0 1 17.5 5.833v10A1.667 1.667 0 0 1 15.833 17.5H4.167A1.667 1.667 0 0 1 2.5 15.833v-10A1.667 1.667 0 0 1 4.167 4.167Z" stroke="currentColor" strokeWidth="1.5"/>
+              </svg>
+              05 Feb - 06 March
+            </button>
           </div>
         </div>
 
