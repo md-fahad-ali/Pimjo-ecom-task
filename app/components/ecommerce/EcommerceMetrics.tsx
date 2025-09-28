@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Badge from "../badge/Badge";
 import { IoCubeOutline } from "react-icons/io5";
 import { LuArrowDownRight } from "react-icons/lu";
-import { ArrowUpIcon, GroupIcon } from "lucide-react";
 import { useTheme } from "@/app/context/ThemeContext";
 import Spinner from "@/app/components/Spinner";
 
@@ -63,7 +62,7 @@ export const EcommerceMetrics = () => {
             <Badge color="error">Failed</Badge>
           ) : (
             <Badge color={stats && stats.customersChange >= 0 ? "success" : "error"}>
-              <ArrowUpIcon />
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="12" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M6.065 1.624a.75.75 0 0 1 .558-.25h.001c.192 0 .384.073.531.22l3 2.998a.75.75 0 1 1-1.06 1.06l-1.722-1.72v6.193a.75.75 0 0 1-1.5 0v-6.19L4.155 5.654a.75.75 0 0 1-1.06-1.061z" clip-rule="evenodd"></path></svg>
               {Math.abs(stats?.customersChange ?? 0).toFixed(2)}%
             </Badge>
           )}
@@ -93,9 +92,9 @@ export const EcommerceMetrics = () => {
           ) : (
             <Badge color={stats && stats.ordersChange >= 0 ? "success" : "error"}>
               {stats && stats.ordersChange >= 0 ? (
-                <LuArrowDownRight className="rotate-180 text-success-500" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" class="text-error-500"><path fill="currentColor" fill-rule="evenodd" d="M5.315 10.376c.137.153.336.25.558.25h.001a.75.75 0 0 0 .531-.22l3-2.998a.75.75 0 1 0-1.06-1.06l-1.722 1.72V1.875a.75.75 0 1 0-1.5 0v6.19L3.405 6.346a.75.75 0 0 0-1.06 1.061z" clip-rule="evenodd"></path></svg>
               ) : (
-                <LuArrowDownRight className="text-error-500" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" class="text-error-500"><path fill="currentColor" fill-rule="evenodd" d="M5.315 10.376c.137.153.336.25.558.25h.001a.75.75 0 0 0 .531-.22l3-2.998a.75.75 0 1 0-1.06-1.06l-1.722 1.72V1.875a.75.75 0 1 0-1.5 0v6.19L3.405 6.346a.75.75 0 0 0-1.06 1.061z" clip-rule="evenodd"></path></svg>
               )}
               {Math.abs(stats?.ordersChange ?? 0).toFixed(2)}%
             </Badge>
