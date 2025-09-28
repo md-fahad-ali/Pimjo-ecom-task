@@ -171,11 +171,11 @@ export default function MonthlyTarget() {
 
   return (
     <div
-      className={`dashboard-theme rounded-2xl border border-[var(--border)] ${
-        theme === "dark" ? "bg-[var(--background)]" : "bg-[var(--panel)]"
+      className={`dashboard-theme rounded-b-2xl rounded-t-none border border-[var(--border)] overflow-hidden ${
+        theme === "dark" ? "bg-white/[0.03]" : "bg-[#f2f4f7]"
       }`}
-    >
-      <div className={`px-5 pt-9  shadow-default rounded-2xl pb-11 sm:px-6 sm:pt-6`}>
+   >
+      <div className={`px-5 pt-9 shadow-default ${theme === "dark" ? "bg-[#101828]" : "bg-white" } rounded-2xl pb-11 sm:px-6 sm:pt-6`}>
         <div className="flex justify-between">
           <div>
             <h3 className="text-lg font-semibold text-[var(--foreground)]">
@@ -244,9 +244,7 @@ export default function MonthlyTarget() {
       </div>
 
       <div
-        className={`flex items-center ${
-          theme === "dark" ? "bg-white/[0.03] border-t border-white/10" : "bg-[var(--background)] border-t border-[var(--border)]"
-        } justify-center gap-5 px-6 py-[28px] sm:gap-8 sm:py-5 rounded-b-2xl overflow-hidden -mt-2 md:-mt-3`}
+        className={`flex items-center justify-center mt-[42px] gap-5 px-6 py-[28px] sm:gap-8 sm:py-5 -mt-2 md:-mt-3`}
       >
         <div>
           <p className="mb-1 text-center text-[var(--secondary)] text-theme-xs sm:text-sm">
