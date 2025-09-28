@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "productId": 104,
+      "name": "Blue Shirt",
+      "price": "$79.00",
+      "image": "/assets/featured-product-4.png",
+      "quantity": 2
+    },
+    {
+      "productId": 103,
+      "name": "Black Hoodie",
+      "price": "$129.00",
+      "image": "/assets/featured-product-3.png",
+      "quantity": 1
+    },
+    {
+      "productId": 101,
+      "name": "White Jacket",
+      "price": "$249.00",
+      "image": "/assets/featured-product-1.png",
+      "quantity": 1
+    }
+  ]
+}
