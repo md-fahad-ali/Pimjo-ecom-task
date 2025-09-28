@@ -244,7 +244,7 @@ export default function MonthlyTarget() {
       </div>
 
       <div
-        className={`flex items-center justify-center mt-[42px] gap-5 px-6 py-[28px] sm:gap-8 sm:py-5 -mt-2 md:-mt-3`}
+        className={`flex items-center justify-center gap-5 px-6 pt-[42px] pb-[28px] sm:gap-8 sm:pt-[42px] sm:pb-5 -mt-2 md:-mt-3`}
       >
         <div>
           <p className="mb-1 text-center text-[var(--secondary)] text-theme-xs sm:text-sm">
