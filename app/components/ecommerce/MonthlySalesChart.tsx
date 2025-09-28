@@ -39,7 +39,7 @@ export default function MonthlySalesChart() {
     },
     stroke: {
       show: true,
-      width: 4,
+      width: 1,
       colors: ["transparent"],
     },
     xaxis: {
@@ -96,7 +96,8 @@ export default function MonthlySalesChart() {
           show: true,
         },
       },
-      borderColor: "var(--border)",
+      borderColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(15, 23, 42, 0.05)",
+      strokeDashArray: 0,
     },
     fill: {
       opacity: 1,

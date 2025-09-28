@@ -171,7 +171,7 @@ export default function MonthlyTarget() {
 
   return (
     <div
-      className={`dashboard-theme rounded-b-2xl rounded-t-none border border-[var(--border)] overflow-hidden ${
+      className={`dashboard-theme rounded-2xl border border-[var(--border)] overflow-hidden ${
         theme === "dark" ? "bg-white/[0.03]" : "bg-[#f2f4f7]"
       }`}
    >

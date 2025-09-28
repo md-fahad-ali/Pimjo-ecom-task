@@ -58,8 +58,9 @@
   /* Dark mode dashboard - Softer dark colors */
   --background: #111827; /* dark background */
   --panel: #1F2937;      /* dark panels */
-  --border: #374151;     /* medium dark border */
-  --foreground: #F9FAFB; /* light text */
+  --border: #1d2939;     /* medium dark border */
+  --foreground: #F9FAFB; /* lig#e4e7ec
+ht text */
   --secondary: #9CA3AF;  /* light gray for secondary text */
   --brand: #465FFF;      /* blue brand color rgb(70, 95, 255) */
 }
@@ -142,8 +143,17 @@ body {
   color: var(--foreground) !important;
 }
 
+.border-gray-200 {
+  border-color: var(--color-gray-200);
+}
+
 .apexcharts-gridline {
   stroke: var(--border) !important;
+}
+
+/* Optional: thinner grid lines when you add `chart-thin-grid` to a chart wrapper */
+.chart-thin-grid .apexcharts-gridline {
+  stroke-width: 0.6 !important; /* default ~1; reduce to make lines slimmer */
 }
 
 .apexcharts-tooltip {

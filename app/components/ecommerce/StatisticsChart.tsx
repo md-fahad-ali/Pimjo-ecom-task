@@ -12,6 +12,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export default function StatisticsChart() {
+  const { theme } = useTheme();
   const options: ApexOptions = {
     legend: {
       show: false, // Hide legend
@@ -58,7 +59,8 @@ export default function StatisticsChart() {
           show: true, // Show grid lines on y-axis
         },
       },
-      borderColor: "var(--border)",
+      borderColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(15, 23, 42, 0.05)",
+      strokeDashArray: 4,
     },
     dataLabels: {
       enabled: false, // Disable data labels
@@ -128,7 +130,6 @@ export default function StatisticsChart() {
     },
   ];
 
-  const { theme } = useTheme();
   return (
     <div
       className={`rounded-2xl border px-5 pb-5 pt-5 sm:px-6 sm:pt-6 ${
