@@ -108,7 +108,7 @@ export async function PUT(request: Request) {
   
   const userId = await getUserId();
   const cartData = readCartData();
-  let userCart = cartData.carts.find((cart: UserCart) => cart.userId === userId);
+  const userCart = cartData.carts.find((cart: UserCart) => cart.userId === userId);
   
   if (!userCart) {
     return NextResponse.json({ error: "Cart not found" }, { status: 404 });
@@ -138,7 +138,7 @@ export async function DELETE(request: Request) {
   
   const userId = await getUserId();
   const cartData = readCartData();
-  let userCart = cartData.carts.find((cart: UserCart) => cart.userId === userId);
+  const userCart = cartData.carts.find((cart: UserCart) => cart.userId === userId);
   
   if (!userCart) {
     return NextResponse.json({ error: "Cart not found" }, { status: 404 });

@@ -360,9 +360,7 @@ const Navbar = () => {
               {showCart && (
                 <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-20 p-3">
                   <h4 className="text-sm font-semibold mb-2">Cart</h4>
-                  {cartLoading && (
-                    <p className="text-sm text-gray-500">Loading cart...</p>
-                  )}
+                  
                   {!cartLoading && cartError && (
                     <p className="text-sm text-red-600">{cartError}</p>
                   )}

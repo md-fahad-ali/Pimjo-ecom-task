@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from "react";
 
 export type CartItem = {
   productId: number;
@@ -29,8 +29,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const inFlightAdd = useRef<Set<number>>(new Set());
+  const inFlightUpdate = useRef<Set<number>>(new Set());
+  const inFlightRemove = useRef<Set<number>>(new Set());
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -44,15 +46,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // Clear any cached cart data and refresh
     setItems([]);
     refresh();
-  }, []);
+  }, [refresh]);
 
-  const addToCart = async (productId: number) => {
+  const addToCart = useCallback(async (productId: number) => {
     if (inFlightAdd.current.has(productId)) return; // prevent duplicate concurrent adds
     inFlightAdd.current.add(productId);
     // Don't set loading state for add operations to prevent cart UI from showing loading
@@ -71,10 +73,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } finally {
       inFlightAdd.current.delete(productId);
     }
-  };
+  }, []);
 
-  const updateQty = async (productId: number, quantity: number) => {
-    setLoading(true);
+  const updateQty = useCallback(async (productId: number, quantity: number) => {
+    if (inFlightUpdate.current.has(productId)) return; // prevent duplicate concurrent updates
+    inFlightUpdate.current.add(productId);
+    
+    // Optimistically update the UI first
+    setItems(prevItems => 
+      prevItems.map(item => 
+        item.productId === productId 
+          ? { ...item, quantity } 
+          : item
+      ).filter(item => item.quantity > 0)
+    );
+    
     try {
       const res = await fetch("/api/cart", {
         method: "PUT",
@@ -87,13 +100,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to update cart";
       setError(message);
+      // Revert optimistic update on error
+      refresh();
     } finally {
-      setLoading(false);
+      inFlightUpdate.current.delete(productId);
     }
-  };
+  }, [refresh]);
 
-  const removeFromCart = async (productId: number) => {
-    setLoading(true);
+  const removeFromCart = useCallback(async (productId: number) => {
+    if (inFlightRemove.current.has(productId)) return; // prevent duplicate concurrent removes
+    inFlightRemove.current.add(productId);
+    
+    // Optimistically remove from UI first
+    setItems(prevItems => prevItems.filter(item => item.productId !== productId));
+    
     try {
       const res = await fetch(`/api/cart?productId=${productId}`, {
         method: "DELETE",
@@ -104,14 +124,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to remove from cart";
       setError(message);
+      // Revert optimistic update on error
+      refresh();
     } finally {
-      setLoading(false);
+      inFlightRemove.current.delete(productId);
     }
-  };
+  }, [refresh]);
 
   const value = useMemo<CartContextType>(
     () => ({ items, loading, error, addToCart, updateQty, removeFromCart, refresh }),
-    [items, loading, error]
+    [items, loading, error, addToCart, updateQty, removeFromCart, refresh]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
