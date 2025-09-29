@@ -27,7 +27,7 @@ function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         <span className="relative mr-3 h-11 w-11 rounded-full">
           <span className="absolute inset-0 overflow-hidden rounded-full">
             <Image
-              src="/assets/Avatar.png"
+              src="/assets/Avatar_m.png"
               alt="User"
               fill
               sizes="44px"
@@ -74,7 +74,7 @@ function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         }
       >
         <div>
-          <span className="block font-medium text-theme-sm" style={{ color: 'var(--foreground)' }}>
+          <span className={`block font-medium text-theme-sm ${theme === "dark" ? "text-gray-400":"text-[#344054]"}`}>
             Musharof Chowdhury
           </span>
           <span className="mt-0.5 block text-theme-xs" style={{ color: 'var(--secondary)' }}>
