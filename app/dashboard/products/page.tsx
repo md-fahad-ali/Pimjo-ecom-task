@@ -22,17 +22,22 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const currentPage = 1;
-  const totalPages = 10;
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 7;
 
   useEffect(() => {
     let mounted = true;
+    setLoading(true);
     (async () => {
       try {
-        const res = await fetch("/api/products", { cache: "no-store" });
+        const res = await fetch(`/api/products?page=${page}&limit=${limit}`, { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to load products");
         const data = await res.json();
-        if (mounted) setProducts(data.products ?? []);
+        if (mounted) {
+          setProducts(data.products ?? []);
+          setTotalPages(data.totalPages ?? 1);
+        }
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : "Failed to load products";
         if (mounted) setError(message);
@@ -43,7 +48,7 @@ export default function ProductsPage() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [page]);
 
   const filteredProducts = useMemo(() => {
     if (!products) return [] as Product[];
@@ -57,6 +62,23 @@ export default function ProductsPage() {
       return matchesSearch;
     });
   }, [products, search]);
+
+  
+  const pageList = useMemo<(number | string)[]>(() => {
+    const total = totalPages;
+    const current = page;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    const list: (number | string)[] = [1, 2];
+    if (current > 4) list.push("…");
+    const start = Math.max(3, current - 1);
+    const end = Math.min(total - 2, current + 1);
+    for (let i = start; i <= end; i++) list.push(i);
+    if (current < total - 3) list.push("…");
+    list.push(total - 1, total);
+    return list;
+  }, [page, totalPages]);
   return (
     <div className="dashboard-theme">
       {/* Toolbar card */}
@@ -167,27 +189,63 @@ export default function ProductsPage() {
 
         {/* Pagination */}
         <div className={`flex items-center justify-between border-t px-4 py-3 sm:px-6 sm:py-4 ${theme === "dark" ? "border-[#1D2939]" : "border-[#E4E7EC]"}`}>
-          <button className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-theme-sm ${
-            theme === "dark"
-              ? "border-[#344054] bg-[#1D2939] text-[#98A2B3] hover:bg-[rgba(255,255,255,0.03)]"
-              : "border-[#D0D5DD] bg-[#FFFFFF] text-[#667085] hover:bg-[#F9FAFB]"
-          }`}>
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-theme-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+              theme === "dark"
+                ? "border-[#344054] bg-[#1D2939] text-[#98A2B3] hover:bg-[rgba(255,255,255,0.03)]"
+                : "border-[#D0D5DD] bg-[#FFFFFF] text-[#667085] hover:bg-[#F9FAFB]"
+            }`}
+          >
             Prev
           </button>
-          <div className="hidden sm:flex items-center gap-2">
-            <button className={`h-10 w-10 rounded-lg border ${theme === "dark" ? "border-[#344054] text-[#98A2B3] bg-[#1D2939] hover:bg-[rgba(255,255,255,0.03)]" : "border-[#D0D5DD] text-[#667085] bg-[#FFFFFF] hover:bg-[#F9FAFB]"}`}>1</button>
-            <button className={`h-10 w-10 rounded-lg border ${theme === "dark" ? "border-[#344054] text-[#98A2B3] bg-[#1D2939] hover:bg-[rgba(255,255,255,0.03)]" : "border-[#D0D5DD] text-[#667085] bg-[#FFFFFF] hover:bg-[#F9FAFB]"}`}>2</button>
-            <button className={`h-10 w-10 rounded-lg border ${theme === "dark" ? "border-[#344054] text-[#98A2B3] bg-[#1D2939] hover:bg-[rgba(255,255,255,0.03)]" : "border-[#D0D5DD] text-[#667085] bg-[#FFFFFF] hover:bg-[#F9FAFB]"}`}>3</button>
+          <div className="hidden sm:flex items-center gap-3">
+            {pageList.map((token, idx) => {
+              if (typeof token === 'string') {
+                return (
+                  <span
+                    key={`ellipsis-${idx}`}
+                    className={`${theme === 'dark' ? 'text-[#98A2B3]' : 'text-[#667085]'} text-sm select-none`}
+                  >
+                    {token}
+                  </span>
+                );
+              }
+              const isActive = token === page;
+              return (
+                <button
+                  key={token}
+                  onClick={() => setPage(token)}
+                  className={
+                    `h-10 w-10 rounded-xl text-sm font-medium ` +
+                    (theme === 'dark'
+                      ? isActive
+                        ? 'bg-[#3758F9] text-white border border-transparent'
+                        : 'text-[#98A2B3] border border-transparent hover:bg-white/[0.03]'
+                      : isActive
+                        ? 'bg-[#3758F9] text-white border border-transparent'
+                        : 'border border-[#D0D5DD] text-[#667085] bg-[#FFFFFF] hover:bg-[#F9FAFB]')
+                  }
+                >
+                  {token}
+                </button>
+              );
+            })}
           </div>
           {/* Mobile page text */}
           <div className={`sm:hidden text-sm font-medium ${theme === "dark" ? "text-white/80" : "text-[#1D2939]"}`}>
-            Page {currentPage} of {totalPages}
+            Page {page} of {totalPages}
           </div>
-          <button className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-theme-sm ${
-            theme === "dark"
-              ? "border-[#344054] bg-[#1D2939] text-[#98A2B3] hover:bg-[rgba(255,255,255,0.03)]"
-              : "border-[#D0D5DD] bg-[#FFFFFF] text-[#667085] hover:bg-[#F9FAFB]"
-          }`}>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-theme-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+              theme === "dark"
+                ? "border-[#344054] bg-[#1D2939] text-[#98A2B3] hover:bg-[rgba(255,255,255,0.03)]"
+                : "border-[#D0D5DD] bg-[#FFFFFF] text-[#667085] hover:bg-[#F9FAFB]"
+            }`}
+          >
             Next
           </button>
         </div>
