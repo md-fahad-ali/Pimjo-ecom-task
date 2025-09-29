@@ -178,8 +178,16 @@ export default function MonthlyTarget() {
       className={`dashboard-theme rounded-2xl border border-[var(--border)] overflow-hidden ${theme === "dark" ? "bg-white/[0.03]" : "bg-[#f2f4f7]"
         }`}
     >
-      <div className={`px-5 pt-9 shadow-default ${theme === "dark" ? "bg-[#101828]" : "bg-white"} rounded-2xl pb-11 sm:px-6 sm:pt-6`}>
-        <div className="flex justify-between">
+      <div
+        className={`relative px-5 pt-9 shadow-default ${theme === "dark" ? "bg-[#101828]" : "bg-white"} rounded-2xl pb-11 sm:px-6 sm:pt-6`}
+        aria-busy={loading}
+      >
+        {loading && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-[var(--background)]/60 backdrop-blur-[2px]">
+            <div className="h-8 w-8 rounded-full border-2 border-gray-300 border-t-[var(--brand)] animate-spin" aria-label="Loading" />
+          </div>
+        )}
+        <div className={`flex justify-between`}>
           <div>
             <h3 className="text-lg font-semibold text-[var(--foreground)]">
               Monthly Target
