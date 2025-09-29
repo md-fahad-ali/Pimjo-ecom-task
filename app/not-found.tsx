@@ -20,7 +20,7 @@ export default function NotFound() {
       {/* Container (max-w 1280), responsive paddings */}
       <div className="mx-auto w-full max-w-[1280px] px-4 py-20 sm:py-28">
         <div className="w-full flex flex-col items-center gap-4 sm:gap-5 text-center">
-          <span className="uppercase text-[96px] md:text-[200px] tracking-widest text-xs font-semibold text-gray-800">404</span>
+          <span className="uppercase text-[96px] md:text-[200px] -tracking-[0.03em] text-xs font-[500] text-gray-800">404</span>
           <h1 className="font-bold text-gray-900 text-3xl sm:text-4xl md:text-5xl leading-tight">
             Page not found
           </h1>
