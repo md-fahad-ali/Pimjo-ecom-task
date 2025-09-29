@@ -126,8 +126,9 @@ export default function RecentOrders() {
           </button>
         </div>
       </div>
-      <div className="max-w-full overflow-x-auto">
-        <Table>
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="min-w-[630px] sm:min-w-0 px-4 sm:px-0">
+          <Table>
           {/* Table Header */}
           <TableHeader
             className={`border-y ${
@@ -286,7 +287,8 @@ export default function RecentOrders() {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </div>
     </div>
   );

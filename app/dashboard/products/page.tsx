@@ -93,9 +93,7 @@ export default function ProductsPage() {
         <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
           <div className="flex flex-col gap-1">
             <h2 className={`text-lg font-semibold ${theme === "dark" ? "text-white/90" : "text-[#1D2939]"}`}>All products</h2>
-            <p className="text-theme-sm text-[var(--secondary)] dark:text-gray-400">
-              {loading ? "" : error ? "" : `${filteredProducts.length} of ${products?.length ?? 0} items`}
-            </p>
+            
           </div>
 
           <div className="flex flex-wrap items-center gap-3 sm:w-auto w-full">

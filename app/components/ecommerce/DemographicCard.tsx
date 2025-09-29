@@ -86,7 +86,7 @@ export default function DemographicCard() {
           </div>
       </div>
       <div
-        className={`px-4 py-6 my-6 overflow-hidden border rounded-2xl sm:px-6 ${
+        className={`px-4 py-6 my-6 overflow-hidden border rounded-2xl sm:px-6 flex items-center justify-center ${
           theme === "dark"
             ? "border-gray-800 bg-gray-900"
             : "border-[var(--border)] bg-[var(--background)]"
@@ -94,9 +94,12 @@ export default function DemographicCard() {
       >
         <div
           id="mapOne"
-          className="mapOne map-btn -mx-4 -my-6 h-[212px] w-[252px] 2xsm:w-[307px] xsm:w-[358px] sm:-mx-6 md:w-[668px] lg:w-[634px] xl:w-[393px] 2xl:w-[554px]"
+          className="mapOne map-btn mx-auto w-full aspect-[2/1]"
         >
-          <CountryMap />
+          <CountryMap
+            key={theme}
+            mapColor={theme === "dark" ? "#374151" : "#E4E7EC"}
+          />
         </div>
       </div>
 
