@@ -13,11 +13,18 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-
 export default function MonthlySalesChart() {
   const { theme } = useTheme();
+  const highlightIndex = 2; // Mar
+  const colorful = "#3B82F6"; // blue (Tailwind blue-500)
+  const muted = theme === "dark" ? "#2A3648" : "#E5E7EB"; // slate for dark, light gray for light
+  const months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  const values = [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112];
+  const data = months.map((m, i) => ({ x: m, y: values[i], fillColor: i === highlightIndex ? colorful : muted }));
+
   const options: ApexOptions = {
-    colors: ["var(--brand)"],
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "bar",
@@ -38,25 +45,12 @@ export default function MonthlySalesChart() {
       enabled: false,
     },
     stroke: {
-      show: true,
-      width: 1,
+      show: false,
+      width: 0,
       colors: ["transparent"],
     },
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      categories: months,
       axisBorder: {
         show: false,
       },
@@ -96,8 +90,8 @@ export default function MonthlySalesChart() {
           show: true,
         },
       },
-      borderColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(15, 23, 42, 0.05)",
-      strokeDashArray: 0,
+      borderColor: theme === "dark" ? "rgba(255,255,255,0.06)" : "rgba(15, 23, 42, 0.06)",
+      strokeDashArray: 1,
     },
     fill: {
       opacity: 1,
@@ -115,7 +109,7 @@ export default function MonthlySalesChart() {
   const series = [
     {
       name: "Sales",
-      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+      data,
     },
   ];
   const [isOpen, setIsOpen] = useState(false);
@@ -129,23 +123,23 @@ export default function MonthlySalesChart() {
   }
 
   return (
-    <div className={`dashboard-theme overflow-hidden rounded-2xl border border-[var(--border)] ${theme === "dark"? "bg-white/[0.03]": "bg-[var(--panel)]"}  px-5 pt-5 sm:px-6 sm:pt-6`}>
+    <div className={`dashboard-theme overflow-hidden rounded-2xl border border-[var(--border)] ${theme === "dark" ? "bg-white/[0.03]" : "bg-[var(--panel)]"}  px-5 pt-5 sm:px-6 sm:pt-6`}>
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-[var(--foreground)]">
           Monthly Sales
         </h3>
 
         <div className="relative inline-block">
-            <button onClick={toggleDropdown} className="dropdown-toggle">
-              <EllipsisVerticalIcon className="h-6 w-6 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
-            </button>
-            <Dropdown
+          <button onClick={toggleDropdown} className="dropdown-toggle">
+            <EllipsisVerticalIcon className="h-6 w-6 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
+          </button>
+          <Dropdown
               isOpen={isOpen}
               onClose={closeDropdown}
               className={`w-44 p-3 rounded-2xl ${
                 theme === 'dark'
-                  ? 'bg-[#0F172A] shadow-none'
-                  : 'bg-white border border-slate-300 shadow-[0_8px_24px_rgba(0,0,0,0.08)]'
+                  ? '!bg-[#1f2937] shadow-none'
+                  : 'bg-white border !border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.08)]'
               }`}
             >
               <DropdownItem
@@ -171,7 +165,7 @@ export default function MonthlySalesChart() {
                 Delete
               </DropdownItem>
             </Dropdown>
-          </div>
+        </div>
       </div>
 
       <div className="max-w-full overflow-x-auto custom-scrollbar">

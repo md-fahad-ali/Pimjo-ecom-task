@@ -171,11 +171,10 @@ export default function MonthlyTarget() {
 
   return (
     <div
-      className={`dashboard-theme rounded-2xl border border-[var(--border)] overflow-hidden ${
-        theme === "dark" ? "bg-white/[0.03]" : "bg-[#f2f4f7]"
-      }`}
-   >
-      <div className={`px-5 pt-9 shadow-default ${theme === "dark" ? "bg-[#101828]" : "bg-white" } rounded-2xl pb-11 sm:px-6 sm:pt-6`}>
+      className={`dashboard-theme rounded-2xl border border-[var(--border)] overflow-hidden ${theme === "dark" ? "bg-white/[0.03]" : "bg-[#f2f4f7]"
+        }`}
+    >
+      <div className={`px-5 pt-9 shadow-default ${theme === "dark" ? "bg-[#101828]" : "bg-white"} rounded-2xl pb-11 sm:px-6 sm:pt-6`}>
         <div className="flex justify-between">
           <div>
             <h3 className="text-lg font-semibold text-[var(--foreground)]">
@@ -192,31 +191,28 @@ export default function MonthlyTarget() {
             <Dropdown
               isOpen={isOpen}
               onClose={closeDropdown}
-              className={`w-44 p-3 rounded-2xl ${
-                theme === 'dark'
-                  ? 'bg-[#0F172A] shadow-none'
-                  : 'bg-white border border-slate-300 shadow-[0_8px_24px_rgba(0,0,0,0.08)]'
-              }`}
+              className={`w-44 p-3 rounded-2xl ${theme === 'dark'
+                  ? '!bg-[#1f2937] shadow-none'
+                  : 'bg-white border !border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.08)]'
+                }`}
             >
               <DropdownItem
                 tag="a"
                 onItemClick={closeDropdown}
-                className={`flex w-full font-normal text-left rounded-lg ${
-                  theme === 'dark'
+                className={`flex w-full font-normal text-left rounded-lg ${theme === 'dark'
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-white/5'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-                }`}
+                  }`}
               >
                 View More
               </DropdownItem>
               <DropdownItem
                 tag="a"
                 onItemClick={closeDropdown}
-                className={`flex w-full font-normal text-left rounded-lg ${
-                  theme === 'dark'
+                className={`flex w-full font-normal text-left rounded-lg ${theme === 'dark'
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-white/5'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-                }`}
+                  }`}
               >
                 Delete
               </DropdownItem>

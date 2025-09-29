@@ -56,8 +56,8 @@ export default function DemographicCard() {
               onClose={closeDropdown}
               className={`w-44 p-3 rounded-2xl ${
                 theme === 'dark'
-                  ? 'bg-[#0F172A] shadow-none'
-                  : 'bg-white border border-slate-300 shadow-[0_8px_24px_rgba(0,0,0,0.08)]'
+                  ? '!bg-[#1f2937] shadow-none'
+                  : 'bg-white border !border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.08)]'
               }`}
             >
               <DropdownItem
