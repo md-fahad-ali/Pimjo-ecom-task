@@ -6,7 +6,15 @@
     },
     {
       "userId": "b7c76639-1fa3-451e-a264-ff5d680de346",
-      "items": []
+      "items": [
+        {
+          "productId": 103,
+          "name": "Black Hoodie",
+          "price": "$129.00",
+          "image": "/assets/featured-product-3.png",
+          "quantity": 1
+        }
+      ]
     },
     {
       "userId": "244619f1-84f0-4b2e-91bc-22ebbfbd4c4d",

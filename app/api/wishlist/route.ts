@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { products } from "../_data/products";
-
-const DATA_DIR = path.join(process.cwd(), "app", "api", "_data");
-const WISHLIST_FILE = path.join(DATA_DIR, "wishlist.json");
+import { getUserId } from "../../lib/userSession";
+import connectDB from "../../lib/mongodb";
+import Wishlist from "../../models/Wishlist";
 
 export type WishlistItem = {
   productId: number;
@@ -13,50 +11,79 @@ export type WishlistItem = {
   image: string;
 };
 
-export type Wishlist = { items: WishlistItem[] };
-
-function readWishlist(): Wishlist {
-  try {
-    const raw = fs.readFileSync(WISHLIST_FILE, "utf-8");
-    return JSON.parse(raw);
-  } catch {
-    return { items: [] };
-  }
-}
-
-function writeWishlist(w: Wishlist) {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  fs.writeFileSync(WISHLIST_FILE, JSON.stringify(w, null, 2), "utf-8");
-}
-
 export async function GET() {
-  const w = readWishlist();
-  return NextResponse.json(w);
+  try {
+    await connectDB();
+    const userId = await getUserId();
+    
+    let wishlist = await Wishlist.findOne({ userId });
+    if (!wishlist) {
+      wishlist = await Wishlist.create({ userId, items: [] });
+    }
+    
+    return NextResponse.json({ items: wishlist.items });
+  } catch (error) {
+    console.error('Wishlist GET error:', error);
+    return NextResponse.json({ error: "Failed to load wishlist" }, { status: 500 });
+  }
 }
 
 // Toggle add/remove
 export async function POST(request: Request) {
-  const body = await request.json().catch(() => ({}));
-  const productId = Number(body.productId);
-  const product = products.find((p) => p.id === productId);
-  if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 });
-  const w = readWishlist();
-  const idx = w.items.findIndex((i) => i.productId === productId);
-  if (idx !== -1) {
-    w.items.splice(idx, 1); // remove if exists
-  } else {
-    w.items.push({ productId, name: product.name, price: product.price, image: product.image });
+  try {
+    await connectDB();
+    const body = await request.json().catch(() => ({}));
+    const productId = Number(body.productId);
+    const product = products.find((p) => p.id === productId);
+    if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    
+    const userId = await getUserId();
+    let wishlist = await Wishlist.findOne({ userId });
+    
+    if (!wishlist) {
+      wishlist = await Wishlist.create({ userId, items: [] });
+    }
+    
+    const existingItemIndex = wishlist.items.findIndex((item: any) => item.productId === productId);
+    
+    if (existingItemIndex !== -1) {
+      wishlist.items.splice(existingItemIndex, 1); // remove if exists
+    } else {
+      wishlist.items.push({ 
+        productId, 
+        name: product.name, 
+        price: product.price, 
+        image: product.image 
+      });
+    }
+    
+    await wishlist.save();
+    return NextResponse.json({ items: wishlist.items }, { status: 201 });
+  } catch (error) {
+    console.error('Wishlist POST error:', error);
+    return NextResponse.json({ error: "Failed to update wishlist" }, { status: 500 });
   }
-  writeWishlist(w);
-  return NextResponse.json(w, { status: 201 });
 }
 
 export async function DELETE(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const productId = Number(searchParams.get("productId"));
-  if (!productId) return NextResponse.json({ error: "productId query param required" }, { status: 400 });
-  const w = readWishlist();
-  w.items = w.items.filter((i) => i.productId !== productId);
-  writeWishlist(w);
-  return NextResponse.json(w);
+  try {
+    await connectDB();
+    const { searchParams } = new URL(request.url);
+    const productId = Number(searchParams.get("productId"));
+    if (!productId) return NextResponse.json({ error: "productId query param required" }, { status: 400 });
+    
+    const userId = await getUserId();
+    const wishlist = await Wishlist.findOne({ userId });
+    
+    if (!wishlist) {
+      return NextResponse.json({ error: "Wishlist not found" }, { status: 404 });
+    }
+    
+    wishlist.items = wishlist.items.filter((item: any) => item.productId !== productId);
+    await wishlist.save();
+    return NextResponse.json({ items: wishlist.items });
+  } catch (error) {
+    console.error('Wishlist DELETE error:', error);
+    return NextResponse.json({ error: "Failed to remove from wishlist" }, { status: 500 });
+  }
 }

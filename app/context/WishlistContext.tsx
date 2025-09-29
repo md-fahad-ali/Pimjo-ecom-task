@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback, useRef } from "react";
 
 export type WishlistItem = {
   productId: number;
@@ -26,8 +26,10 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const inFlightToggle = useRef<Set<number>>(new Set());
+  const inFlightRemove = useRef<Set<number>>(new Set());
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -41,14 +43,27 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
-  const toggleWishlist = async (productId: number) => {
-    setLoading(true);
+  const toggleWishlist = useCallback(async (productId: number) => {
+    if (inFlightToggle.current.has(productId)) return; // prevent duplicate concurrent toggles
+    inFlightToggle.current.add(productId);
+    
+    // Optimistically update UI first
+    const isCurrentlyInWishlist = items.some(item => item.productId === productId);
+    
+    if (isCurrentlyInWishlist) {
+      // Remove from wishlist optimistically
+      setItems(prevItems => prevItems.filter(item => item.productId !== productId));
+    } else {
+      // We need product data to add optimistically, so we'll fetch it from the API response
+      // For now, just don't show loading state to make it feel instant
+    }
+    
     try {
       const res = await fetch("/api/wishlist", {
         method: "POST",
@@ -61,13 +76,20 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to update wishlist";
       setError(message);
+      // Revert optimistic update on error
+      refresh();
     } finally {
-      setLoading(false);
+      inFlightToggle.current.delete(productId);
     }
-  };
+  }, [items, refresh]);
 
-  const removeFromWishlist = async (productId: number) => {
-    setLoading(true);
+  const removeFromWishlist = useCallback(async (productId: number) => {
+    if (inFlightRemove.current.has(productId)) return; // prevent duplicate concurrent removes
+    inFlightRemove.current.add(productId);
+    
+    // Optimistically remove from UI first
+    setItems(prevItems => prevItems.filter(item => item.productId !== productId));
+    
     try {
       const res = await fetch(`/api/wishlist?productId=${productId}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to remove from wishlist");
@@ -76,14 +98,16 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : "Failed to remove from wishlist";
       setError(message);
+      // Revert optimistic update on error
+      refresh();
     } finally {
-      setLoading(false);
+      inFlightRemove.current.delete(productId);
     }
-  };
+  }, [refresh]);
 
   const value = useMemo<WishlistContextType>(
     () => ({ items, loading, error, toggleWishlist, removeFromWishlist, refresh }),
-    [items, loading, error]
+    [items, loading, error, toggleWishlist, removeFromWishlist, refresh]
   );
 
   return <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>;
