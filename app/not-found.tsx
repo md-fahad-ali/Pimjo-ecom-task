@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import React from "react";
+import { FaChevronLeft } from "react-icons/fa";
 
 // Global 404 page (Figma: 404 Error sections / Type=V1, View=Desktop)
 // Theme-independent: fixed colors, not using CSS variables
@@ -28,17 +29,21 @@ export default function NotFound() {
             The page you’re looking for doesn’t exist or has been moved. Check the URL or go back home.
           </p>
           <div className="mt-3 flex w-full sm:w-auto flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <Link
-              href="/"
-              className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg px-5 py-3 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-            >
-              Go to Homepage
-            </Link>
+            
+            
             <Link
               href="/dashboard/products"
-              className="inline-flex w-full sm:w-auto items-center justify-center rounded-lg px-5 py-3 text-sm font-medium border border-gray-200 text-gray-800 hover:bg-gray-50 transition-colors"
+              className="inline-flex gap-2 w-full sm:w-auto items-center justify-center rounded-lg px-5 py-3 text-sm font-medium border border-[#D1D5DB] text-gray-800 hover:bg-gray-50 transition-colors"
             >
-              Browse Products
+              <FaChevronLeft/>
+              Go Back
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex gap-2 w-full sm:w-auto items-center justify-center rounded-lg px-5 py-3 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            >
+              
+              Back to home
             </Link>
           </div>
         </div>
