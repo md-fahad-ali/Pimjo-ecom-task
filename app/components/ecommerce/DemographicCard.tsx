@@ -94,7 +94,7 @@ export default function DemographicCard() {
       >
         <div
           id="mapOne"
-          className="mapOne map-btn mx-auto w-full aspect-[2/1]"
+          className="mapOne map-btn -mx-4 sm:mx-auto w-[358px] min-w-[358px] h-[212px] min-h-[212px] shrink-0 sm:translate-x-0 sm:w-full sm:min-w-0 sm:h-auto sm:min-h-0 sm:aspect-[2/1]"
         >
           <CountryMap
             key={theme}
