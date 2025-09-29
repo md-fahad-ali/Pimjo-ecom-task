@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { products } from "../_data/products";
 import { getUserId } from "../../lib/userSession";
 import connectDB from "../../lib/mongodb";
-import Cart from "../../models/Cart";
+import Cart, { ICartItem } from "../../models/Cart";
 
 export type CartItem = {
   productId: number;
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       cart = await Cart.create({ userId, items: [] });
     }
     
-    const existingItemIndex = cart.items.findIndex((item: any) => item.productId === productId);
+    const existingItemIndex = cart.items.findIndex((item: ICartItem) => item.productId === productId);
     
     if (existingItemIndex >= 0) {
       cart.items[existingItemIndex].quantity += 1;
@@ -85,7 +85,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 });
     }
     
-    const itemIndex = cart.items.findIndex((item: any) => item.productId === productId);
+    const itemIndex = cart.items.findIndex((item: ICartItem) => item.productId === productId);
     if (itemIndex === -1) {
       return NextResponse.json({ error: "Item not in cart" }, { status: 404 });
     }
@@ -121,7 +121,7 @@ export async function DELETE(request: Request) {
     }
     
     const before = cart.items.length;
-    cart.items = cart.items.filter((item: any) => item.productId !== productId);
+    cart.items = cart.items.filter((item: ICartItem) => item.productId !== productId);
     if (cart.items.length === before) {
       return NextResponse.json({ error: "Item not in cart" }, { status: 404 });
     }

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { products } from "../_data/products";
 import { getUserId } from "../../lib/userSession";
 import connectDB from "../../lib/mongodb";
-import Wishlist from "../../models/Wishlist";
+import Wishlist, { IWishlistItem } from "../../models/Wishlist";
 
 export type WishlistItem = {
   productId: number;
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       wishlist = await Wishlist.create({ userId, items: [] });
     }
     
-    const existingItemIndex = wishlist.items.findIndex((item: any) => item.productId === productId);
+    const existingItemIndex = wishlist.items.findIndex((item: IWishlistItem) => item.productId === productId);
     
     if (existingItemIndex !== -1) {
       wishlist.items.splice(existingItemIndex, 1); // remove if exists
@@ -79,7 +79,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Wishlist not found" }, { status: 404 });
     }
     
-    wishlist.items = wishlist.items.filter((item: any) => item.productId !== productId);
+    wishlist.items = wishlist.items.filter((item: IWishlistItem) => item.productId !== productId);
     await wishlist.save();
     return NextResponse.json({ items: wishlist.items });
   } catch (error) {
