@@ -1,5 +1,5 @@
-import React from "react";
-// import { VectorMap } from "@react-jvectormap/core";
+"use client";
+import React, { useEffect, useState } from "react";
 import { worldMill } from "@react-jvectormap/world";
 import dynamic from "next/dynamic";
 
@@ -11,6 +11,8 @@ const VectorMap = dynamic(
 // Define the component props
 interface CountryMapProps {
   mapColor?: string;
+  mobileScale?: number;   // default zoom for small screens
+  desktopScale?: number;  // default zoom for >= sm screens
 }
 
 type MarkerStyle = {
@@ -32,21 +34,37 @@ type Marker = {
   };
 };
 
-const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
+const CountryMap: React.FC<CountryMapProps> = ({ mapColor, mobileScale = 0.3, desktopScale = 1 }) => {
+  const [scale, setScale] = useState<number>(mobileScale);
+
+  useEffect(() => {
+    // Match Tailwind's sm breakpoint (640px)
+    const mq = window.matchMedia("(min-width: 640px)");
+    const apply = (e: MediaQueryList | MediaQueryListEvent) => {
+      const isDesktop = "matches" in e ? e.matches : (e as MediaQueryList).matches;
+      setScale(isDesktop ? desktopScale : mobileScale);
+    };
+    apply(mq);
+    mq.addEventListener?.("change", apply);
+    return () => mq.removeEventListener?.("change", apply);
+  }, [mobileScale, desktopScale]);
+
   return (
-    <VectorMap
-      map={worldMill}
-      backgroundColor="transparent"
-      markerStyle={
+    <div className="w-full h-full">
+      <VectorMap
+        map={worldMill}
+        backgroundColor="transparent"
+        focusOn={{ x: 0.5, y: 0.5, scale, animate: false }}
+        markerStyle={
         {
           initial: {
             fill: "#465FFF",
             r: 4, // Custom radius for markers
           }, // Type assertion to bypass strict CSS property checks
         } as MarkerStyle
-      }
-      markersSelectable={true}
-      markers={
+        }
+        markersSelectable={true}
+        markers={
         [
           {
             latLng: [37.2580397, -104.657039],
@@ -79,13 +97,13 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
             },
           },
         ] as Marker[]
-      }
-      zoomOnScroll={false}
-      zoomMax={12}
-      zoomMin={1}
-      zoomAnimate={true}
-      zoomStep={1.5}
-      regionStyle={{
+        }
+        zoomOnScroll={false}
+        zoomMax={8}
+        zoomMin={1}
+        zoomAnimate={true}
+        zoomStep={1.5}
+        regionStyle={{
         initial: {
           fill: mapColor || "#D0D5DD",
           fillOpacity: 1,
@@ -104,8 +122,8 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
           fill: "#465FFF",
         },
         selectedHover: {},
-      }}
-      regionLabelStyle={{
+        }}
+        regionLabelStyle={{
         initial: {
           fill: "#35373e",
           fontWeight: 500,
@@ -115,8 +133,9 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
         hover: {},
         selected: {},
         selectedHover: {},
-      }}
-    />
+        }}
+      />
+    </div>
   );
 };
 
