@@ -5,6 +5,7 @@ import { ApexOptions } from "apexcharts";
 import ChartTab from "./ChartTab";
 import dynamic from "next/dynamic";
 import { useTheme } from "@/app/context/ThemeContext";
+import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 
 // Dynamically import the ReactApexChart component
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -151,6 +152,20 @@ export default function StatisticsChart() {
         </div>
         <div className="flex items-start w-full gap-3 sm:justify-end">
           <ChartTab />
+
+          {/* Single responsive date button: icon-only on mobile, icon + text on desktop */}
+          <button
+            type="button"
+            className={`inline-flex text-theme-sm items-center justify-center h-10 w-10 sm:w-auto sm:px-3 gap-0 sm:gap-2 rounded-lg border transition-colors ${
+              theme === "dark"
+                ? "border-gray-700 bg-[#1D2939] text-[#98A2B3] hover:bg-gray-800"
+                : "border-[#D0D5DD] bg-white text-gray-600 hover:bg-gray-50"
+            }`}
+            aria-label="Select date range"
+          >
+            <CalendarDaysIcon className="h-5 w-5" />
+            <span className="hidden sm:inline text-[13px]">05 Feb - 06 March</span>
+          </button>
         </div>
       </div>
 
