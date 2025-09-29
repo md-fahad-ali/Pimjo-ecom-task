@@ -257,14 +257,14 @@ export default function RecentOrders() {
                     theme === "dark" ? "text-gray-400" : "text-[var(--secondary)]"
                   }`}
                 >
-                  {product.price}
+                  {product.category}
                 </TableCell>
                 <TableCell
                   className={`py-3 text-theme-sm ${
                     theme === "dark" ? "text-gray-400" : "text-[var(--secondary)]"
                   }`}
                 >
-                  {product.category}
+                  {product.price}
                 </TableCell>
                 <TableCell
                   className={`py-3 text-theme-sm ${
