@@ -186,7 +186,7 @@ const FeaturedProducts = () => {
                           }
                         }}
                         disabled={addingId === product.id}
-                        className="w-full flex items-center justify-center gap-1.5 md:gap-1 px-4 py-2.5 md:py-2.5 border border-[#D1D5DB] text-[#1F2937] rounded-lg text-sm md:text-base font-medium hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-colors group/button disabled:opacity-60"
+                        className="w-full flex items-center justify-center gap-1.5 md:gap-1 px-4 py-2.5 md:py-2.5 border border-[#D1D5DB] text-[#1F2937] rounded-lg text-sm md:text-base font-medium hover:bg-[#3758F9] hover:text-white hover:border-indigo-600 transition-colors group/button disabled:opacity-60"
                       >
                         <svg width="21" height="19" viewBox="0 0 21 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M0.816406 1H1.99696C2.74468 1 3.37822 1.55068 3.48234 2.29112L3.63429 3.37161M3.63429 3.37161L4.73641 11.2089C4.84053 11.9493 5.47407 12.5 6.22179 12.5L15.5833 12.5C16.1803 12.5 16.7205 12.146 16.9587 11.5986L19.626 5.47023C20.0572 4.4795 19.3312 3.37161 18.2507 3.37161H3.63429Z" stroke="#374151" className="group-hover/button:stroke-white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
