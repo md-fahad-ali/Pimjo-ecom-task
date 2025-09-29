@@ -109,6 +109,9 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
 
 export default function MonthlyTarget() {
   const series = [75.55];
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const options: ApexOptions = {
     colors: ["var(--brand)"],
     chart: {
@@ -117,6 +120,9 @@ export default function MonthlyTarget() {
       height: 330,
       sparkline: {
         enabled: true,
+      },
+      events: {
+        mounted: () => setLoading(false),
       },
     },
     plotOptions: {
@@ -156,8 +162,6 @@ export default function MonthlyTarget() {
     },
     labels: ["Progress"],
   };
-
-  const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
