@@ -47,13 +47,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    // Clear any cached cart data and refresh
+    setItems([]);
     refresh();
   }, []);
 
   const addToCart = async (productId: number) => {
     if (inFlightAdd.current.has(productId)) return; // prevent duplicate concurrent adds
     inFlightAdd.current.add(productId);
-    setLoading(true);
+    // Don't set loading state for add operations to prevent cart UI from showing loading
     try {
       const res = await fetch("/api/cart", {
         method: "POST",
@@ -68,7 +70,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setError(message);
     } finally {
       inFlightAdd.current.delete(productId);
-      setLoading(false);
     }
   };
 

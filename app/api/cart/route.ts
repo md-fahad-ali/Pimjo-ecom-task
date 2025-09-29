@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { products } from "../_data/products";
+import { getUserId } from "../../lib/userSession";
 
 const DATA_DIR = path.join(process.cwd(), "app", "api", "_data");
 const CART_FILE = path.join(DATA_DIR, "cart.json");
@@ -14,27 +15,53 @@ export type CartItem = {
   quantity: number;
 };
 
-export type Cart = { items: CartItem[] };
+export type UserCart = {
+  userId: string;
+  items: CartItem[];
+};
 
-function readCart(): Cart {
+export type CartData = {
+  carts: UserCart[];
+};
+
+function readCartData(): CartData {
   try {
     const raw = fs.readFileSync(CART_FILE, "utf-8");
-    return JSON.parse(raw);
+    const data = JSON.parse(raw);
+    // Handle migration from old format
+    if (data.items && !data.carts) {
+      return { carts: [] };
+    }
+    return data;
   } catch {
-    return { items: [] };
+    return { carts: [] };
   }
 }
 
-function writeCart(cart: Cart) {
+function writeCartData(cartData: CartData) {
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
-  fs.writeFileSync(CART_FILE, JSON.stringify(cart, null, 2), "utf-8");
+  fs.writeFileSync(CART_FILE, JSON.stringify(cartData, null, 2), "utf-8");
+}
+
+function getUserCart(userId: string): UserCart {
+  const cartData = readCartData();
+  let userCart = cartData.carts.find((cart: UserCart) => cart.userId === userId);
+  
+  if (!userCart) {
+    userCart = { userId, items: [] };
+    cartData.carts.push(userCart);
+    writeCartData(cartData);
+  }
+  
+  return userCart;
 }
 
 export async function GET() {
-  const cart = readCart();
-  return NextResponse.json(cart);
+  const userId = await getUserId();
+  const userCart = getUserCart(userId);
+  return NextResponse.json({ items: userCart.items });
 }
 
 export async function POST(request: Request) {
@@ -44,12 +71,21 @@ export async function POST(request: Request) {
   if (!product) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }
-  const cart = readCart();
-  const existing = cart.items.find((i) => i.productId === productId);
+  
+  const userId = await getUserId();
+  const cartData = readCartData();
+  let userCart = cartData.carts.find((cart: UserCart) => cart.userId === userId);
+  
+  if (!userCart) {
+    userCart = { userId, items: [] };
+    cartData.carts.push(userCart);
+  }
+  
+  const existing = userCart.items.find((i: CartItem) => i.productId === productId);
   if (existing) {
     existing.quantity += 1; // always increment by 1 on add
   } else {
-    cart.items.push({
+    userCart.items.push({
       productId,
       name: product.name,
       price: product.price,
@@ -57,8 +93,9 @@ export async function POST(request: Request) {
       quantity: 1, // new items start at 1
     });
   }
-  writeCart(cart);
-  return NextResponse.json(cart, { status: 201 });
+  
+  writeCartData(cartData);
+  return NextResponse.json({ items: userCart.items }, { status: 201 });
 }
 
 export async function PUT(request: Request) {
@@ -68,18 +105,28 @@ export async function PUT(request: Request) {
   if (!productId || quantity === undefined || Number.isNaN(quantity)) {
     return NextResponse.json({ error: "productId and quantity required" }, { status: 400 });
   }
-  const cart = readCart();
-  const idx = cart.items.findIndex((i) => i.productId === productId);
+  
+  const userId = await getUserId();
+  const cartData = readCartData();
+  let userCart = cartData.carts.find((cart: UserCart) => cart.userId === userId);
+  
+  if (!userCart) {
+    return NextResponse.json({ error: "Cart not found" }, { status: 404 });
+  }
+  
+  const idx = userCart.items.findIndex((i: CartItem) => i.productId === productId);
   if (idx === -1) {
     return NextResponse.json({ error: "Item not in cart" }, { status: 404 });
   }
+  
   if (quantity <= 0) {
-    cart.items.splice(idx, 1);
+    userCart.items.splice(idx, 1);
   } else {
-    cart.items[idx].quantity = quantity;
+    userCart.items[idx].quantity = quantity;
   }
-  writeCart(cart);
-  return NextResponse.json(cart);
+  
+  writeCartData(cartData);
+  return NextResponse.json({ items: userCart.items });
 }
 
 export async function DELETE(request: Request) {
@@ -88,12 +135,21 @@ export async function DELETE(request: Request) {
   if (!productId) {
     return NextResponse.json({ error: "productId query param required" }, { status: 400 });
   }
-  const cart = readCart();
-  const before = cart.items.length;
-  cart.items = cart.items.filter((i) => i.productId !== productId);
-  if (cart.items.length === before) {
+  
+  const userId = await getUserId();
+  const cartData = readCartData();
+  let userCart = cartData.carts.find((cart: UserCart) => cart.userId === userId);
+  
+  if (!userCart) {
+    return NextResponse.json({ error: "Cart not found" }, { status: 404 });
+  }
+  
+  const before = userCart.items.length;
+  userCart.items = userCart.items.filter((i: CartItem) => i.productId !== productId);
+  if (userCart.items.length === before) {
     return NextResponse.json({ error: "Item not in cart" }, { status: 404 });
   }
-  writeCart(cart);
-  return NextResponse.json(cart);
+  
+  writeCartData(cartData);
+  return NextResponse.json({ items: userCart.items });
 }

@@ -30,6 +30,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (!isInitialized) return;
     localStorage.setItem("theme", theme);
+    
+    // Set cookie for server-side consistency
+    document.cookie = `theme=${theme}; path=/; max-age=31536000; SameSite=Lax`;
 
     const enableDark = theme === "dark";
     const root = document.documentElement;
